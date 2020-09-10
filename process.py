@@ -5,8 +5,15 @@
 # 3. Download tagged images into output folder.
 # TODO: compare output folder to tag list; remove local images not found in html.
 # 4. Create user page from user template.
+# TODO: compare output folder to user list; remove users not found in list or with no images.
 # 5. Create index page from index template.
+#
+# Usage:
+#
+# python process.py -l /../screenshot_galleries.list -o /../output/ -t /../templates/
+#
 
+import argparse
 import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
@@ -14,26 +21,11 @@ from urllib.parse import urljoin, urlparse
 
 from jinja2 import Environment, FileSystemLoader
 
-SRC = Path('templates')
-OUT = Path('output')
-URLS = Path('screenshot_galleries.list')
 TAG = 'nix'
 
 
-class PageParser(HTMLParser):
-    def reset(self):
-        HTMLParser.reset(self)
-        self.urls = []
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "img":
-            attrs = dict(attrs)
-            if attrs.get('rel', '') == TAG and 'src' in attrs:
-                self.urls.append(attrs['src'])
-
-
-def get_sites():
-    with open(URLS, 'r') as f:
+def get_sites(list_file):
+    with open(list_file, 'r') as f:
         lines = f.read().split('\n')
 
     sites = {}
@@ -44,11 +36,11 @@ def get_sites():
     return sites
 
 
-def main():
-    sites = get_sites()
-    templates = Environment(loader=FileSystemLoader(SRC))
+def scrape_sites(sites, templates, output):
+    templates = Environment(loader=FileSystemLoader(templates))
     parser = PageParser()
-    OUT.mkdir(exist_ok=True)
+    output = Path(output)
+    output.mkdir(exist_ok=True)
     everything = {}
 
     # render individual user pages
@@ -60,7 +52,7 @@ def main():
         parser.feed(html)
 
         address = urlparse(site)
-        cache = OUT / address.netloc
+        cache = output / address.netloc
         cache.mkdir(exist_ok=True)
         base_url = "{}://{}".format(address.scheme, address.netloc)
         user_images = []
@@ -76,14 +68,51 @@ def main():
         if user_images:
             parser.reset()
             everything[user] = user_images
-            with open(OUT / '{}.html'.format(user), 'w') as f:
+            with open(output / '{}.html'.format(user), 'w') as f:
                 f.write(user_template.render(user=user, images=user_images))
 
     # render index page
     index_template = templates.get_template('index.html')
-    with open(OUT / 'index.html', 'w') as f:
+    with open(output / 'index.html', 'w') as f:
         f.write(index_template.render(everything=everything))
 
 
+class PageParser(HTMLParser):
+    def reset(self):
+        HTMLParser.reset(self)
+        self.urls = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "img":
+            attrs = dict(attrs)
+            if attrs.get('rel', '') == TAG and 'src' in attrs:
+                self.urls.append(attrs['src'])
+
+
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        '-l', '--list', nargs=1,
+        help='File containing list of users and gallery URLs',
+        default='screenshot_galleries.list',
+        type=str,
+    )
+
+    parser.add_argument(
+        '-o', '--output', nargs=1,
+        help='Folder to output generate HTML files into.',
+        default='output',
+        type=str,
+    )
+
+    parser.add_argument(
+        '-t', '--templates', nargs=1,
+        help='Folder containing HTML templates.',
+        default='templates',
+        type=str,
+    )
+    args = parser.parse_args()
+
+    sites = get_sites(args.list)
+    scrape_sites(sites, args.templates, args.output)
