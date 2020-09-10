@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang=en-US>
+
+	<head>
+		<title>nixers.net image gallery - index</title>
+	</head>
+
+	<body>
+		{% for user, images in everything.items() %}
+		<h1>{{ user}}</h1>
+		{% for image in images %}
+		<img src=//{{ user }}/{{ image }} />
+		{% endfor %}
+		{% endfor %}
+	</body>
+</html>
