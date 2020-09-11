@@ -52,7 +52,7 @@ def scrape_sites(sites, templates, output):
         parser.feed(html)
 
         address = urlparse(site)
-        cache = output / address.netloc
+        cache = output / user
         cache.mkdir(exist_ok=True)
         base_url = "{}://{}".format(address.scheme, address.netloc)
         user_images = []
