@@ -83,10 +83,13 @@ class PageParser(HTMLParser):
         self.urls = []
 
     def handle_starttag(self, tag, attrs):
-        if tag == "img":
+        if tag == "img" or tag == 'a':
             attrs = dict(attrs)
             if attrs.get('rel', '') == TAG and 'src' in attrs:
                 self.urls.append(attrs['src'])
+            if attrs.get('rel', '') == TAG and 'href' in attrs:
+                print(attrs['href'])
+                self.urls.append(attrs['href'])
 
 
 if __name__ == "__main__":
