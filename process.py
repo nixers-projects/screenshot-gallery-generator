@@ -88,7 +88,6 @@ class PageParser(HTMLParser):
             if attrs.get('rel', '') == TAG and 'src' in attrs:
                 self.urls.append(attrs['src'])
             if attrs.get('rel', '') == TAG and 'href' in attrs:
-                print(attrs['href'])
                 self.urls.append(attrs['href'])
 
 
