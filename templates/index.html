@@ -7,9 +7,9 @@
 
 	<body>
 		{% for user, images in everything.items() %}
-		<h1>{{ user}}</h1>
+		<h1><a href="/{{ user }}.html">{{ user }}</a></h1>
 		{% for image in images %}
-		<img src=./{{ user }}/{{ image }} />
+		<a href="/{{ user }}/{{ image }}"><img src="/{{ user }}/{{ image }}" /></a>
 		{% endfor %}
 		{% endfor %}
 	</body>

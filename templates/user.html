@@ -7,7 +7,7 @@
 
 	<body>
 		{% for image in images %}
-		<img src=./{{ user }}/{{ image }} />
+		<a href="/{{ user }}/{{ image }}"><img src="/{{ user }}/{{ image }}" /></a>
 		{% endfor %}
 	</body>
 </html>
