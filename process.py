@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-#
-# 1. Download HTML from list of URLs.
-# 2. Parse HTML to find img tags containing rel="nix".
-# 3. Download tagged images into output folder.
-# TODO: compare output folder to tag list; remove local images not found in html.
-# 4. Create user page from user template.
-# TODO: compare output folder to user list; remove users not found in list or with no images.
-# 5. Create index page from index template.
-#
-# Usage:
-#
-# python process.py -l /../screenshot_galleries.list -o /../output/ -t /../templates/
-#
+"""
+What this does:
+    1. Downloads HTML from list of URLs.
+    2. Parses HTML to find img/a tags containing rel="nix".
+    3. Create a page for each user from the user template.
+    4. Create an index page from the index template.
+
+Usage:
+    python process.py -l /../screenshot_galleries.list -o /../output/ -t /../templates/
+
+"""
 
 import argparse
 import shutil
@@ -54,28 +52,16 @@ def scrape_sites(sites, templates, output):
         parser.feed(html)
 
         address = urlparse(site)
-        cache = output / user
-        cache.mkdir(exist_ok=True)
         base_url = "{}://{}".format(address.scheme, address.netloc)
         user_images = []
 
-        for i, url in enumerate(parser.urls):
+        for url in parser.urls:
             path = urlparse(url).path
             if path.startswith('/'):
-                image = str(i).zfill(3) + path
-                full_url = urljoin(base_url, url)
+                image_url = urljoin(base_url, url)
             else:
-                image = str(i).zfill(3) + urljoin(address.path, path)
-                full_url = base_url + urljoin(address.path, path)
-            image = image.replace('/', '.')
-            image_full = cache / image
-            user_images.append(image)
-            if not image_full.exists():
-                try:
-                    urllib.request.urlretrieve(full_url, image_full)
-                except urllib.error.HTTPError as e:
-                    print(f"{full_url}: {e}")
-                    pass
+                image_url = base_url + urljoin(address.path, path)
+            user_images.append(image_url)
 
         if user_images:
             parser.reset()
@@ -95,7 +81,7 @@ class PageParser(HTMLParser):
         self.urls = []
 
     def handle_starttag(self, tag, attrs):
-        if tag == "img" or tag == 'a':
+        if tag in ('img', 'a'):
             attrs = dict(attrs)
             if attrs.get('rel', '') == TAG and 'src' in attrs:
                 self.urls.append(attrs['src'])
@@ -128,5 +114,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    sites = get_sites(args.list)
-    scrape_sites(sites, args.templates, args.output)
+    scrape_sites(get_sites(args.list), args.templates, args.output)
