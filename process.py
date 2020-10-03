@@ -60,12 +60,22 @@ def scrape_sites(sites, templates, output):
         user_images = []
 
         for i, url in enumerate(parser.urls):
-            image = str(i).zfill(3) + urlparse(url).path.replace('/', '.')
+            path = urlparse(url).path
+            if path.startswith('/'):
+                image = str(i).zfill(3) + path
+                full_url = urljoin(base_url, url)
+            else:
+                image = str(i).zfill(3) + urljoin(address.path, path)
+                full_url = base_url + urljoin(address.path, path)
+            image = image.replace('/', '.')
             image_full = cache / image
             user_images.append(image)
             if not image_full.exists():
-                full_url = urljoin(base_url, url)
-                urllib.request.urlretrieve(full_url, image_full)
+                try:
+                    urllib.request.urlretrieve(full_url, image_full)
+                except urllib.error.HTTPError as e:
+                    print(f"{full_url}: {e}")
+                    pass
 
         if user_images:
             parser.reset()
