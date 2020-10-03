@@ -97,21 +97,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '-l', '--list', nargs=1,
+        '-l', '--list', nargs='?',
         help='File containing list of users and gallery URLs',
         default='screenshot_galleries.list',
         type=str,
     )
 
     parser.add_argument(
-        '-o', '--output', nargs=1,
+        '-o', '--output', nargs='?',
         help='Folder to output generate HTML files into.',
         default='output',
         type=str,
     )
 
     parser.add_argument(
-        '-t', '--templates', nargs=1,
+        '-t', '--templates', nargs='?',
         help='Folder containing HTML templates.',
         default='templates',
         type=str,
