@@ -3,11 +3,16 @@
 
 	<head>
 		<title>nixers.net image gallery - {{ user }}</title>
+		<link rel="stylesheet" href="/style.css" type="text/css" />
 	</head>
 
 	<body>
-		{% for image in images %}
-		<a href="/{{ user }}/{{ image }}"><img src="/{{ user }}/{{ image }}" /></a>
-		{% endfor %}
+		<a href="/index.html">Back</a>
+		<h1>{{ user }}</h1>
+		<div id="shots">
+			{% for image in images %}
+			<a href="/{{ user }}/{{ image }}"><img src="/{{ user }}/{{ image }}" /></a>
+			{% endfor %}
+		</div>
 	</body>
 </html>

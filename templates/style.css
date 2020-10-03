@@ -1,0 +1,25 @@
+body {
+    background: black;
+    color: #ccc;
+    font-family: monospace;
+}
+
+a {
+    color: inherit;
+}
+
+#shots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+#shots > a {
+    width: calc(50% - 50px);
+    margin: 20px;
+    max-width: 50%;
+}
+
+img {
+    width: 100%;
+}

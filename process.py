@@ -14,6 +14,7 @@
 #
 
 import argparse
+import shutil
 import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
@@ -37,11 +38,12 @@ def get_sites(list_file):
 
 
 def scrape_sites(sites, templates, output):
-    templates = Environment(loader=FileSystemLoader(templates))
-    parser = PageParser()
     output = Path(output)
     output.mkdir(exist_ok=True)
+    shutil.copy(Path(templates) / "style.css", output / 'style.css')
     everything = {}
+    parser = PageParser()
+    templates = Environment(loader=FileSystemLoader(templates))
 
     # render individual user pages
     user_template = templates.get_template('user.html')

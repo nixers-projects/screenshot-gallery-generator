@@ -3,14 +3,17 @@
 
 	<head>
 		<title>nixers.net image gallery - index</title>
+		<link rel="stylesheet" href="/style.css" type="text/css" />
 	</head>
 
 	<body>
 		{% for user, images in everything.items() %}
 		<h1><a href="/{{ user }}.html">{{ user }}</a></h1>
-		{% for image in images %}
-		<a href="/{{ user }}/{{ image }}"><img src="/{{ user }}/{{ image }}" /></a>
-		{% endfor %}
+		<div id="shots">
+			{% for image in images %}
+			<a href="/{{ user }}/{{ image }}"><img src="/{{ user }}/{{ image }}" /></a>
+			{% endfor %}
+		</div>
 		{% endfor %}
 	</body>
 </html>
