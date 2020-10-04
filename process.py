@@ -3,8 +3,8 @@
 What this does:
     1. Downloads HTML from list of URLs.
     2. Parses HTML to find img/a tags containing rel="nix".
-    3. Create a page for each user from the user template.
-    4. Create an index page from the index template.
+    3. Creates a page for each user from the user template.
+    4. Creates an index page from the index template using max 6 images per user.
 
 Usage:
     python process.py -l /../screenshot_galleries.list -o /../output/ -t /../templates/
@@ -12,6 +12,7 @@ Usage:
 """
 
 import argparse
+import random
 import shutil
 import urllib.request
 from html.parser import HTMLParser
@@ -39,7 +40,7 @@ def scrape_sites(sites, templates, output):
     output = Path(output)
     output.mkdir(exist_ok=True)
     shutil.copy(Path(templates) / "style.css", output / 'style.css')
-    everything = {}
+    index_data = []
     parser = PageParser()
     templates = Environment(loader=FileSystemLoader(templates))
 
@@ -65,14 +66,17 @@ def scrape_sites(sites, templates, output):
 
         if user_images:
             parser.reset()
-            everything[user] = user_images
             with open(output / '{}.html'.format(user), 'w') as f:
                 f.write(user_template.render(user=user, images=user_images))
+            if len(user_images) > 6:
+                user_images = random.sample(user_images, 6)
+            index_data.append((user, user_images))
 
     # render index page
     index_template = templates.get_template('index.html')
+    random.shuffle(index_data)
     with open(output / 'index.html', 'w') as f:
-        f.write(index_template.render(everything=everything))
+        f.write(index_template.render(index_data=index_data))
 
 
 class PageParser(HTMLParser):

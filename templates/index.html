@@ -7,7 +7,7 @@
 	</head>
 
 	<body>
-		{% for user, images in everything.items() %}
+		{% for user, images in index_data %}
 		<h1><a href="/{{ user }}.html">{{ user }}</a></h1>
 		<div id="shots">
 			{% for image in images %}
