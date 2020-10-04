@@ -11,7 +11,7 @@
 		<h1><a href="/{{ user }}.html">{{ user }}</a></h1>
 		<div id="shots">
 			{% for image in images %}
-			<a href="{{ image }}"><img src="{{ image }}" /></a>
+			<a href="{{ image }}"><img loading="lazy" src="{{ image }}" /></a>
 			{% endfor %}
 		</div>
 		{% endfor %}
