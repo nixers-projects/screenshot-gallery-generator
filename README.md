@@ -1,5 +1,5 @@
 # screenshot-gallery-generator
-A scraper and generator for nixers.net screenshot gallery
+A scraper and generator for <https://screenshots.nixers.net/> screenshot gallery
 
 
 ## how to
