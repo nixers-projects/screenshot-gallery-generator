@@ -48,10 +48,23 @@ def scrape_sites(sites, templates, output):
     user_template = templates.get_template('user.html')
 
     for user, site in sites.items():
-        with urllib.request.urlopen(site) as f:
-            html = f.read().decode('utf-8')
-        parser.feed(html)
+        html = None
 
+        # poor woman's retry
+        i = 0
+        while i < 3:
+            try:
+                with urllib.request.urlopen(site) as f:
+                    html = f.read().decode('utf-8')
+                break
+            except (urllib.error.HTTPError, urllib.error.URLError):
+                print(f"Error x{i}:", site)
+            i += 1
+
+        if html is None:
+            continue
+
+        parser.feed(html)
         address = urlparse(site)
         base_url = "{}://{}".format(address.scheme, address.netloc)
         user_images = []
